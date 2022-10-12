@@ -16,12 +16,15 @@
  *   limitations under the License.
  *
  */
-import qrTerm from 'qrcode-terminal'
+import 'dotenv/config.js'
 
 import {
-  log,
+  ScanStatus,
   WechatyBuilder,
-}           from 'wechaty'
+  log,
+}                  from 'wechaty'
+
+import qrcodeTerminal from 'qrcode-terminal'
 
 const welcome = `
 =============== Powered by Wechaty ===============
@@ -34,7 +37,13 @@ Please wait... I'm trying to login in...
 `
 
 console.log(welcome)
-const bot = WechatyBuilder.build()
+const bot = WechatyBuilder.build({
+  name: 'contact-bot',
+  puppet: 'wechaty-puppet-wechat',
+  puppetOptions: {
+    uos: true
+  }
+})
 
 bot.on('scan',    onScan)
 bot.on('login',   onLogin)
@@ -45,7 +54,18 @@ bot.start()
 .catch(console.error)
 
 function onScan (qrcode, status) {
-  qrTerm.generate(qrcode, { small: true })  // show qrcode on console
+  if (status === ScanStatus.Waiting || status === ScanStatus.Timeout) {
+    const qrcodeImageUrl = [
+      'https://wechaty.js.org/qrcode/',
+      encodeURIComponent(qrcode),
+    ].join('')
+    log.info('StarterBot', 'onScan: %s(%s) - %s', ScanStatus[status], status, qrcodeImageUrl)
+
+    qrcodeTerminal.generate(qrcode, { small: true })  // show qrcode on console
+
+  } else {
+    log.info('StarterBot', 'onScan: %s(%s)', ScanStatus[status], status)
+  }
 }
 
 function onLogin (user) {
