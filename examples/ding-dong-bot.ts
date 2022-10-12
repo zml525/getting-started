@@ -70,10 +70,10 @@ const bot = WechatyBuilder.build({
    *   for using more powerful protocol.
    * Learn more about services (and TOKEN) from https://wechaty.js.org/docs/puppet-services/
    */
-  // puppet: 'wechaty-puppet-service'
-  // puppetOptions: {
-  //   token: 'xxx',
-  // }
+  puppet: 'wechaty-puppet-wechat',
+  puppetOptions: {
+    uos: true
+  }
 })
 
 bot.on('scan',    onScan)
